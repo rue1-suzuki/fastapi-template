@@ -19,6 +19,7 @@ services:
       - 8000:8000
     depends_on:
       - postgres
+      - mysql
   migrate:
     image: fastapi-template.migrate
     build:
@@ -28,6 +29,7 @@ services:
       SQLALCHEMY_DATABASE_URL: $SQLALCHEMY_DATABASE_URL
     depends_on:
       - postgres
+      - mysql
   postgres:
     image: fastapi-template.postgres
     build:
@@ -39,7 +41,15 @@ services:
       POSTGRES_DB: $POSTGRES_DB
     ports:
       - 5432:5432
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-volumes:
-  postgres_data:
+  mysql:
+    image: fastapi-template.mysql
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+    ports:
+      - 3306:3306
