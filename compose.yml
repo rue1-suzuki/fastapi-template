@@ -17,9 +17,6 @@ services:
       SQLALCHEMY_DATABASE_URL: $SQLALCHEMY_DATABASE_URL
     ports:
       - 8000:8000
-    depends_on:
-      - postgres
-      - mysql
   migrate:
     image: fastapi-template.migrate
     build:
@@ -27,9 +24,6 @@ services:
       dockerfile: Dockerfile.migrate
     environment:
       SQLALCHEMY_DATABASE_URL: $SQLALCHEMY_DATABASE_URL
-    depends_on:
-      - postgres
-      - mysql
   postgres:
     image: fastapi-template.postgres
     build:
