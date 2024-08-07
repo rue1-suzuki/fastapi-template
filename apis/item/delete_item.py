@@ -1,6 +1,7 @@
+import logging
 from uuid import UUID
 
-from fastapi import Depends, Path, Response
+from fastapi import Depends, HTTPException, Path, Response
 from sqlalchemy.orm import Session
 
 from dependencies.get_db import get_db
@@ -11,15 +12,22 @@ def delete_item(
     uuid: UUID = Path(),
     db: Session = Depends(get_db),
 ) -> None:
-    item = get_item_or_404(
-        uuid=uuid,
-        db=db,
-    )
+    try:
+        item = get_item_or_404(
+            uuid=uuid,
+            db=db,
+        )
 
-    db.delete(item)
-    db.commit()
+        db.delete(item)
+        db.commit()
 
-    return Response(
-        content=None,
-        status_code=204,
-    )
+        return Response(
+            content=None,
+            status_code=204,
+        )
+    except Exception as e:
+        logging.error(e)
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+        )

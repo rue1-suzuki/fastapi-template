@@ -1,4 +1,6 @@
-from fastapi import Body, Depends
+import logging
+
+from fastapi import Body, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -21,11 +23,18 @@ def post_item(
     body: RequestBody = Body(),
     db: Session = Depends(dependency=get_db),
 ) -> ItemSchema:
-    item = Item()
-    item.name = body.name
-    item.price = body.price
-    db.add(item)
-    db.commit()
-    db.refresh(item)
+    try:
+        item = Item()
+        item.name = body.name
+        item.price = body.price
+        db.add(item)
+        db.commit()
+        db.refresh(item)
 
-    return ItemSchema.model_validate(item)
+        return ItemSchema.model_validate(item)
+    except Exception as e:
+        logging.error(e)
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+        )

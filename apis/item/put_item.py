@@ -1,6 +1,7 @@
+import logging
 from uuid import UUID
 
-from fastapi import Body, Depends, Path
+from fastapi import Body, Depends, HTTPException, Path
 from pydantic import BaseModel, Field, model_validator
 from sqlalchemy.orm import Session
 
@@ -33,18 +34,25 @@ def put_item(
     body: RequestBody = Body(),
     db: Session = Depends(get_db),
 ) -> ItemSchema:
-    item = get_item_or_404(
-        uuid=uuid,
-        db=db,
-    )
+    try:
+        item = get_item_or_404(
+            uuid=uuid,
+            db=db,
+        )
 
-    if body.name is not None:
-        item.name = body.name
+        if body.name is not None:
+            item.name = body.name
 
-    if body.price is not None:
-        item.price = body.price
+        if body.price is not None:
+            item.price = body.price
 
-    db.commit()
-    db.refresh(item)
+        db.commit()
+        db.refresh(item)
 
-    return ItemSchema.model_validate(item)
+        return ItemSchema.model_validate(item)
+    except Exception as e:
+        logging.error(e)
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+        )

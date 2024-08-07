@@ -1,6 +1,7 @@
+import logging
 from uuid import UUID
 
-from fastapi import Depends, Path
+from fastapi import Depends, HTTPException, Path
 from sqlalchemy.orm import Session
 
 from dependencies.get_db import get_db
@@ -12,9 +13,16 @@ def get_item(
     uuid: UUID = Path(),
     db: Session = Depends(get_db),
 ) -> ItemSchema:
-    item = get_item_or_404(
-        uuid=uuid,
-        db=db,
-    )
+    try:
+        item = get_item_or_404(
+            uuid=uuid,
+            db=db,
+        )
 
-    return ItemSchema.model_validate(item)
+        return ItemSchema.model_validate(item)
+    except Exception as e:
+        logging.error(e)
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+        )

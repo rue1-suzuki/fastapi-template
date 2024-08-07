@@ -1,4 +1,6 @@
-from fastapi import Depends
+import logging
+
+from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from dependencies.get_db import get_db
@@ -9,6 +11,13 @@ from schemas.item_schema import ItemSchema
 def list_item(
     db: Session = Depends(get_db),
 ) -> list[ItemSchema]:
-    items = db.query(Item).all()
+    try:
+        items = db.query(Item).all()
 
-    return [ItemSchema.model_validate(item) for item in items]
+        return [ItemSchema.model_validate(item) for item in items]
+    except Exception as e:
+        logging.error(e)
+        raise HTTPException(
+            status_code=500,
+            detail=str(e),
+        )
