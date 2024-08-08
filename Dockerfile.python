@@ -1,16 +1,21 @@
-FROM python:3.12-slim-bookworm AS base
+# Install dependencies
+FROM python:3.11-slim-bookworm AS builder
 WORKDIR /app
+ENV TZ=Asia/Tokyo
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install dependencies
-FROM base AS builder
 COPY requirements.txt .
 RUN pip install --no-dependencies --no-cache-dir -r requirements.txt
 
 # Copy the source code
-FROM base
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
-COPY --from=builder /usr/local/bin/uvicorn /usr/local/bin/uvicorn
+FROM gcr.io/distroless/python3-debian12
+WORKDIR /app
+ENV TZ=Asia/Tokyo
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+COPY --from=builder /usr/local/lib/python3.11/site-packages /root/.local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin/uvicorn .
 COPY . .
-CMD ["python", "main.py"]
+CMD ["main.py"]
