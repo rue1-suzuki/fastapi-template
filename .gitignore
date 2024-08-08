@@ -1,5 +1,3 @@
-**/__pycache__/
-**/.venv/
-
-**/.env*
-**/!.env.sample
+__pycache__
+.venv
+.env

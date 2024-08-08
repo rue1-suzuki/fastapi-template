@@ -1,5 +1,17 @@
-**/__pycache__/
-**/.venv/
+__pycache__
+.venv
+.env
 
-**/.env
-**/.env.sample
+# git管理には含めるがイメージには含めない
+**/__pycache__
+.git
+.github
+.ruff_cache
+.vscode
+tests
+.env.sample
+compose.yml
+Dockerfile.migrate
+Dockerfile.nginx
+Dockerfile.python
+README.md
