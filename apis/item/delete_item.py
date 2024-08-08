@@ -25,6 +25,8 @@ def delete_item(
             content=None,
             status_code=204,
         )
+    except HTTPException as e:
+        raise e
     except Exception as e:
         logging.error(e)
         raise HTTPException(

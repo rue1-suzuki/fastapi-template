@@ -20,6 +20,8 @@ def get_item(
         )
 
         return ItemSchema.model_validate(item)
+    except HTTPException as e:
+        raise e
     except Exception as e:
         logging.error(e)
         raise HTTPException(

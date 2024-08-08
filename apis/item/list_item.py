@@ -15,6 +15,8 @@ def list_item(
         items = db.query(Item).all()
 
         return [ItemSchema.model_validate(item) for item in items]
+    except HTTPException as e:
+        raise e
     except Exception as e:
         logging.error(e)
         raise HTTPException(
